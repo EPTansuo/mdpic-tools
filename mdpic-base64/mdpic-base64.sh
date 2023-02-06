@@ -4,10 +4,13 @@
 
 # 打印帮助信息
 printHelp(){
-	echo "mdpic-dl: Convert image to base64."
+	echo "mdpic-base64: Convert images in markdown to base64."
 	echo "Usage: mdpic-dl [InputFile] [outputFile]"
 }
 
+
+echo "尚不可用"
+exit 255
 
 # 判断命令行参数的个数
 if [ $# != 2 ]

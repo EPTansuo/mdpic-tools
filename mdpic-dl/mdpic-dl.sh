@@ -4,7 +4,7 @@
 
 # 打印帮助信息
 printHelp(){
-	echo "mdpic-dl: Download network image to local."
+	echo "mdpic-dl: Download network images in markdown."
 	echo "Usage: mdpic-dl [InputFile] [outputFile]"
 }
 
