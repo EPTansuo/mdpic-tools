@@ -4,9 +4,11 @@
 
 **mdpic-dl:** 将Markdown文件中的网络图片下载到本地.
 
-[mdpic-dl具体介绍和用法](./mdpic-dl/README.md)
+[mdpic-dl 具体介绍和用法](./mdpic-dl/README.md)
 
-**mdpic-base64:** 将Markdown文件中的图片转为base64编码.(尚不可用)
+**mdpic-base64:** 将Markdown文件中的图片转为base64编码.(尚有较大问题, 不推荐使用)
+
+[mdpic-base64 具体介绍和用法](./mdpic-base64/README.md)
 
 ## 安装: 
 
