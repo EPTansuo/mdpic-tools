@@ -31,7 +31,15 @@ then
 	fi
 fi
 
-
+# 输出文件存在时是否覆盖
+if [ -e $output ]
+then
+	echo "Warning: $ouput already exists."
+	read -p "Overwrite?[Y/n]" tmp
+	if [[ $tmp != 'Y' && $tmp != 'y' ]]
+	then exit 255
+	fi
+fi
 
 
 #args=`grep  '.[*]*(*)' $input`
