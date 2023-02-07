@@ -35,6 +35,16 @@ then
 	fi
 fi
 
+# 输出文件存在时是否覆盖
+if [ -e $output ]
+then
+	echo "Warning: Already has a file named $ouput."
+	read -p "Overwrite?[Y/n]" tmp
+	if [[ $tmp != 'Y' && $tmp != 'y' ]]
+	then exit 255
+	fi
+
+fi
 
 
 
@@ -49,7 +59,8 @@ fi
 
 
 
-mkdir_flag=1
+fileDir=".__md_pic_base64_${output}.files"
+mkdir $fileDir   #创建临时文件夹存放文件
 
 
 i=0
@@ -61,56 +72,62 @@ do
 
 	if [[ $url =~ "png" ]]   # 包含子字符串png
 	then
-		if [[ $url =~ "http" ]]  # 包含子字符串http
+		if [[ $url =~ "http" ]]  # 包含子字符串http, 说明为网络图片
 		then
-			if [ $mkdir_flag == 1 ]
-			then
-				mkdir_flag=0
-				mkdir ".__md_pic_base64_${output}.files"   #创建临时文件夹存放图片
-			fi
 
-			imageFile=".__md_pic_base64_${output}.files/${i}.png"
+			imageFile="$fileDir/${i}.png"
 			curl -o $imageFile  $url					# 下载网络图片
 
 			# 获取base64编码
 			base64Code="data:image/png;base64,`base64 -w 0 $imageFile`"
 
+			#写入sed命令文件
+			echo "s#${url}#$base64Code#g" > "$fileDir\base64.sed"
+
 			# 替换文本
-			sed -i "s#${url}#$base64Code#g" "$output"
+			sed -i -f "$fileDir\base64.sed" $output
+			#如下操作会有参数列表过长的问题, 故替换
+			#sed -i "s#${url}#$base64Code#g" "$output"
 			echo sed -i "s#${url}#data:image/png;base64...#g" "$output"
-		else
+
+		else # 本地图片
+
 			#获取base64编码
 			base64Code="data:image/png;base64,`base64 -w 0 $url`"
 
+			#写入sed命令文件
+			echo "s#${url}#$base64Code#g" > "$fileDir\base64.sed"
+
 			#替换文本
-			sed -i "s#${url}#$base64Code#g" "$output"
+			sed -i -f "$fileDir\base64.sed" $output
+
 			echo sed -i "s#${url}#data:image/png;base64...#g" "$output"
 		fi
 	elif [[ $url =~ "jpg" ]]   # 包含子字符串jpg
 	then
 		if [[ $url =~ "http" ]]  # 包含子字符串http
 		then
-			if [ $mkdir_flag == 1 ]
-			then
-				mkdir_flag=0
-				mkdir ".__md_pic_base64_${output}.files"   #创建临时文件夹存放图片
-			fi
-
 			imageFile=".__md_pic_base64_${output}.files/${i}.jpg"
 			curl -o $imageFile  $url					# 下载网络图片
 
 			# 获取base64编码
 			base64Code="data:image/jpg;base64,`base64 -w 0 $imageFile`"
 
+			#写入sed命令文件
+			echo "s#${url}#$base64Code#g" > "$fileDir\base64.sed"
+
 			# 替换文本
-			sed -i "s#${url}#$base64Code#g" "$output"
+			sed -i -f "$fileDir\base64.sed" $output
 			echo sed -i "s#${url}#data:image/jpg;base64...#g" "$output"
 		else
 			#获取base64编码
 			base64Code="data:image/jpg;base64,`base64 -w 0 $url`"
 
-			#替换文本
-			sed -i "s#${url}#$base64Code#g" "$output"
+			#写入sed命令文件
+			echo "s#${url}#$base64Code#g" > "$fileDir\base64.sed"
+
+			# 替换文本
+			sed -i -f "$fileDir\base64.sed" $output
 			echo sed -i "s#${url}#data:image/jpg;base64...#g" "$output"
 		fi
 	else
@@ -120,10 +137,8 @@ do
 done
 
 # 删除临时创建的文件夹
-if [ $mkdir_flag == 0 ]
-then
-	rm -rf "./.__md_pic_base64_${output}.files"
-fi
+rm -rf $fileDir
+
 
 
 
